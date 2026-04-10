@@ -225,8 +225,21 @@ class GatewayManager:
         try:
             env = os.environ.copy()
             env["HERMES_HOME"] = HERMES_HOME
-            env_vars = read_env_file(ENV_FILE_PATH)
+           env_vars = read_env_file(ENV_FILE_PATH)
             env.update(env_vars)
+
+            llm_model = env_vars.get("LLM_MODEL") or os.environ.get("LLM_MODEL")
+            if llm_model:
+                import yaml as _yaml
+                _cp = Path(HERMES_HOME) / "config.yaml"
+                try:
+                    _cfg = _yaml.safe_load(_cp.read_text()) if _cp.exists() else {}
+                    _cfg = _cfg or {}
+                    _cfg.setdefault("model", {})
+                    _cfg["model"]["default"] = llm_model
+                    _cp.write_text(_yaml.dump(_cfg))
+                except Exception as _e:
+                    self.logs.append(f"Model patch: {_e}")
 
             self.process = await asyncio.create_subprocess_exec(
                 "hermes", "gateway",
