@@ -41,7 +41,9 @@ PAIRING_DIR = Path(HERMES_HOME) / "pairing"
 CODE_TTL_SECONDS = 3600
 
 ENV_VAR_DEFS = [
+    # Model
     ("LLM_MODEL", "Model", "model", False),
+    # Providers
     ("OPENROUTER_API_KEY", "OpenRouter API Key", "provider", True),
     ("DEEPSEEK_API_KEY", "DeepSeek API Key", "provider", True),
     ("DASHSCOPE_API_KEY", "DashScope API Key", "provider", True),
@@ -49,6 +51,7 @@ ENV_VAR_DEFS = [
     ("KIMI_API_KEY", "Kimi API Key", "provider", True),
     ("MINIMAX_API_KEY", "MiniMax API Key", "provider", True),
     ("HF_TOKEN", "Hugging Face Token", "provider", True),
+    # Tools
     ("PARALLEL_API_KEY", "Parallel API Key", "tool", True),
     ("FIRECRAWL_API_KEY", "Firecrawl API Key", "tool", True),
     ("TAVILY_API_KEY", "Tavily API Key", "tool", True),
@@ -58,22 +61,30 @@ ENV_VAR_DEFS = [
     ("GITHUB_TOKEN", "GitHub Token", "tool", True),
     ("VOICE_TOOLS_OPENAI_KEY", "OpenAI Voice Key", "tool", True),
     ("HONCHO_API_KEY", "Honcho API Key", "tool", True),
+    # Messaging — Telegram
     ("TELEGRAM_BOT_TOKEN", "Telegram Bot Token", "messaging", True),
     ("TELEGRAM_ALLOWED_USERS", "Telegram Allowed Users", "messaging", False),
+    # Messaging — Discord
     ("DISCORD_BOT_TOKEN", "Discord Bot Token", "messaging", True),
     ("DISCORD_ALLOWED_USERS", "Discord Allowed Users", "messaging", False),
+    # Messaging — Slack
     ("SLACK_BOT_TOKEN", "Slack Bot Token", "messaging", True),
     ("SLACK_APP_TOKEN", "Slack App Token", "messaging", True),
+    # Messaging — WhatsApp
     ("WHATSAPP_ENABLED", "WhatsApp Enabled", "messaging", False),
+    # Messaging — Email
     ("EMAIL_ADDRESS", "Email Address", "messaging", False),
     ("EMAIL_PASSWORD", "Email Password", "messaging", True),
     ("EMAIL_IMAP_HOST", "Email IMAP Host", "messaging", False),
     ("EMAIL_SMTP_HOST", "Email SMTP Host", "messaging", False),
+    # Messaging — Mattermost
     ("MATTERMOST_URL", "Mattermost URL", "messaging", False),
     ("MATTERMOST_TOKEN", "Mattermost Token", "messaging", True),
+    # Messaging — Matrix
     ("MATRIX_HOMESERVER", "Matrix Homeserver", "messaging", False),
     ("MATRIX_ACCESS_TOKEN", "Matrix Access Token", "messaging", True),
     ("MATRIX_USER_ID", "Matrix User ID", "messaging", False),
+    # Messaging — General
     ("GATEWAY_ALLOW_ALL_USERS", "Allow All Users", "messaging", False),
 ]
 
@@ -115,7 +126,6 @@ def write_env_file(path: Path, env_vars: dict[str, str]):
 
     categories = {"model": "Model", "provider": "Providers", "tool": "Tools", "messaging": "Messaging"}
     grouped: dict[str, list[str]] = {cat: [] for cat in categories}
-    known_keys = {key for key, _, _, _ in ENV_VAR_DEFS}
     key_to_cat = {key: cat for key, _, cat, _ in ENV_VAR_DEFS}
 
     for key, value in env_vars.items():
@@ -360,9 +370,4 @@ async def api_status(request: Request):
     providers = {}
     for key in PROVIDER_KEYS:
         label = key.replace("_API_KEY", "").replace("_TOKEN", "").replace("HF_", "HuggingFace ").replace("_", " ").title()
-        providers[label] = {"configured": bool(env_vars.get(key))}
-
-    channels = {}
-    for name, key in CHANNEL_KEYS.items():
-        val = env_vars.get(key, "")
-        channels[name] = {"configured": bool(val) and val.lower()
+        providers
